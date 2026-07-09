@@ -2,6 +2,32 @@ spring:
   application:
     name: Pet Store (Modernized)
 
+  # Relational (JPA) is the default/faithful migration target (ADR-0004).
+  # Dev/demo uses embedded H2 — zero external dependency (see README).
+  datasource:
+    url: jdbc:h2:mem:petstore;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: ""
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      # Flyway owns the schema; Hibernate only validates that the entity mappings match it.
+      ddl-auto: validate
+    properties:
+      hibernate.format_sql: true
+
+  # Schema + seed as versioned migrations, derived from the legacy PopulateSQL.xml / Populate-UTF8.xml.
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  # H2 web console for local inspection during development.
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
 server:
   port: 8080
 

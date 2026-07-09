@@ -23,6 +23,29 @@
     </properties>
 
     <dependencies>
+        <!-- Persistence: relational (JPA) — the faithful migration target (ADR-0004) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <!-- Schema as versioned code, derived from the legacy PopulateSQL.xml DDL -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <!-- Dev/test datastore: embedded, zero external dependency -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- Prod-like relational datastore -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- Web + server-side views -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
