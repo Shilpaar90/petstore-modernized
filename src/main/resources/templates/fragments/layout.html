@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--
+  Shared storefront chrome: a common <head> (styles) and a language switch bar.
+  Pages pull these in with th:replace so look-and-feel stays consistent across the slice.
+-->
+<head th:fragment="head(title)">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:text="${title}">Pet Store</title>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 2rem auto; max-width: 52rem;
+               color: #222; line-height: 1.5; padding: 0 1rem; }
+        a { color: #2b6cb0; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        h1 { color: #2b6cb0; }
+        nav.crumbs { font-size: .9rem; margin: 0 0 1.5rem; color: #666; }
+        .langbar { float: right; font-size: .85rem; }
+        .langbar a { margin-left: .5rem; }
+        ul.grid { list-style: none; padding: 0; display: grid;
+                  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); gap: .75rem; }
+        ul.grid li { background: #ebf8ff; border-radius: .5rem; padding: .9rem; text-align: center; }
+        table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+        th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid #eee; }
+        th { color: #555; font-size: .85rem; text-transform: uppercase; letter-spacing: .03em; }
+        .attrs { color: #666; font-size: .9rem; }
+        .price { font-weight: 600; white-space: nowrap; }
+        .muted { color: #999; font-size: .85rem; }
+    </style>
+</head>
+<body>
+<div th:fragment="langbar" class="langbar">
+    <span class="muted">Language:</span>
+    <a th:href="@{__${currentPath}__(lang='en_US')}" href="?lang=en_US">EN</a>
+    <a th:href="@{__${currentPath}__(lang='ja_JP')}" href="?lang=ja_JP">日本語</a>
+    <a th:href="@{__${currentPath}__(lang='zh_CN')}" href="?lang=zh_CN">中文</a>
+</div>
+</body>
+</html>

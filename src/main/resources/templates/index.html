@@ -18,9 +18,13 @@
         This is the modernized Java Pet Store storefront, migrated from the J2EE 1.3
         Blueprints reference application to Spring Boot on Java 21.
     </p>
+    <p>
+        <a th:href="@{/categories}" href="/categories"><strong>🛍️ Browse the catalog →</strong></a>
+    </p>
     <p>Storefront slices are delivered incrementally. Operational endpoints:</p>
     <ul>
         <li><a th:href="@{/actuator/health}" href="/actuator/health"><code>/actuator/health</code></a> — liveness/readiness</li>
+        <li><a th:href="@{/api/catalog/categories}" href="/api/catalog/categories"><code>/api/catalog/categories</code></a> — read-only JSON API</li>
     </ul>
 </body>
 </html>

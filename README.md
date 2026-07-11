@@ -118,10 +118,10 @@ mvn test
 
 | Phase | Scope                                   | Status |
 |-------|-----------------------------------------|--------|
-| 0     | Foundation, discovery, scaffolding      | 🟡 in progress |
-| 1     | Domain model & data layer               | ⬜ planned |
-| 2     | Catalog slice (read-only)               | ⬜ planned |
-| 3     | Identity & shopping cart                | ⬜ planned |
+| 0     | Foundation, discovery, scaffolding      | ✅ done |
+| 1     | Domain model & data layer               | ✅ done |
+| 2     | Catalog slice (read-only)               | ✅ done |
+| 3     | Identity & shopping cart                | 🟡 in progress |
 | 4     | Checkout & orders                       | ⬜ planned |
 | 5     | MongoDB stretch goal                    | ⬜ planned |
 | 6     | Hardening, publish, demo                | ⬜ planned |

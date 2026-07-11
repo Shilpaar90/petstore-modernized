@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${item.id} + ' — Pet Store')}">
+    <title>Item — Pet Store</title>
+</head>
+<body>
+<div th:replace="~{fragments/layout :: langbar}"></div>
+<nav class="crumbs">
+    <a th:href="@{/}" href="/">Home</a> /
+    <a th:href="@{/categories}" href="/categories">Catalog</a> /
+    <a th:href="@{/products/{id}(id=${item.productId})}" th:text="${item.productId}" href="#">FI-SW-01</a> /
+    <span th:text="${item.id}">EST-1</span>
+</nav>
+
+<h1 th:text="${item.id}">EST-1</h1>
+<p th:text="${item.description}">Large Angelfish</p>
+
+<table>
+    <tr><th>Attributes</th><td th:text="${#strings.listJoin(item.attributes, ', ')}">Large, Cuddly</td></tr>
+    <tr><th>List price</th><td class="price" th:text="${item.listPrice}">16.50</td></tr>
+    <tr><th>Unit cost</th><td th:text="${item.unitCost}">10.00</td></tr>
+</table>
+</body>
+</html>

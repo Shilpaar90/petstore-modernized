@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Catalog — Pet Store')}">
+    <title>Catalog — Pet Store</title>
+</head>
+<body>
+<div th:replace="~{fragments/layout :: langbar}"></div>
+<nav class="crumbs"><a th:href="@{/}" href="/">Home</a> / Catalog</nav>
+
+<h1>🐾 Browse the catalog</h1>
+<ul class="grid">
+    <li th:each="c : ${categories}">
+        <a th:href="@{/categories/{id}(id=${c.id})}" th:text="${c.name}" href="#">Fish</a>
+    </li>
+</ul>
+<p th:if="${categories.isEmpty()}" class="muted">No categories available for this locale.</p>
+</body>
+</html>

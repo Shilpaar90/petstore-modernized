@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${product.name} + ' — Pet Store')}">
+    <title>Product — Pet Store</title>
+</head>
+<body>
+<div th:replace="~{fragments/layout :: langbar}"></div>
+<nav class="crumbs">
+    <a th:href="@{/}" href="/">Home</a> /
+    <a th:href="@{/categories}" href="/categories">Catalog</a> /
+    <a th:href="@{/categories/{id}(id=${product.categoryId})}" th:text="${product.categoryId}" href="#">FISH</a> /
+    <span th:text="${product.name}">Angelfish</span>
+</nav>
+
+<h1 th:text="${product.name}">Angelfish</h1>
+<p th:text="${product.description}">Salt Water fish from Australia</p>
+
+<table>
+    <thead>
+    <tr><th>Item</th><th>Description</th><th>Attributes</th><th>Price</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="i : ${items}">
+        <td><a th:href="@{/items/{id}(id=${i.id})}" th:text="${i.id}" href="#">EST-1</a></td>
+        <td th:text="${i.description}">Large Angelfish</td>
+        <td class="attrs" th:text="${#strings.listJoin(i.attributes, ', ')}">Large, Cuddly</td>
+        <td class="price" th:text="${i.listPrice}">16.50</td>
+    </tr>
+    </tbody>
+</table>
+<p th:if="${items.isEmpty()}" class="muted">This product has no items for this locale.</p>
+</body>
+</html>
