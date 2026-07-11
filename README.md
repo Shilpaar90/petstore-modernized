@@ -11,9 +11,9 @@ persistence layer and a **MongoDB** adapter behind the same domain ports (the st
 
 ![Storefront demo — browse, switch locale, product detail](docs/images/demo.gif)
 
-<sub>The Thymeleaf storefront: browsing the catalog, switching locale (EN / 日本語 / 中文), and a
-product page — the same Spring Boot app that runs on H2, PostgreSQL, or MongoDB behind identical
-ports.</sub>
+<sub>The full journey, driven end-to-end in a real browser: browse the catalog, switch locale
+(EN / 日本語 / 中文), register, sign in, add to cart, and place an order — the same Spring Boot app
+that runs on H2, PostgreSQL, or MongoDB behind identical ports.</sub>
 
 ---
 
@@ -124,13 +124,14 @@ in, add to cart, checkout through the OPC seam — in one go:
 
 ### Screenshots
 
-| Catalog (a category) | Product detail, localized to Japanese |
+| Product detail, localized to Japanese | Order confirmation (checkout → OPC seam) |
 |---|---|
-| ![Catalog category page](docs/images/03-category-fish.png) | ![Product page in Japanese](docs/images/05-product-ja.png) |
+| ![Product page in Japanese](docs/images/05-product-ja.png) | ![Order confirmation](docs/images/order-confirmation.png) |
 
-The legacy per-locale catalog (`en_US` / `ja_JP` / `zh_CN`) is preserved faithfully — names,
-descriptions, **and** prices resolve per locale (note `¥`-scale prices `1951` / `1114` in the
-Japanese view). More under [`docs/images/`](docs/images).
+The per-locale catalog (`en_US` / `ja_JP` / `zh_CN`) is preserved faithfully — names, descriptions,
+**and** prices resolve per locale (note the yen-scale prices `1951` / `1114` in the Japanese view).
+Checkout persists a durable order and hands it to the `OrderSubmissionPort` seam. More stills under
+[`docs/images/`](docs/images).
 
 ---
 
