@@ -9,6 +9,12 @@ persistence layer and a **MongoDB** adapter behind the same domain ports (the st
 > out of scope; the legacy asynchronous JMS hand-off to OPC is preserved as a documented seam
 > (an outbound port with a local adapter). See [`docs/migration/`](docs/migration).
 
+![Storefront demo — browse, switch locale, product detail](docs/images/demo.gif)
+
+<sub>The Thymeleaf storefront: browsing the catalog, switching locale (EN / 日本語 / 中文), and a
+product page — the same Spring Boot app that runs on H2, PostgreSQL, or MongoDB behind identical
+ports.</sub>
+
 ---
 
 ## Why this exists
@@ -115,6 +121,16 @@ in, add to cart, checkout through the OPC seam — in one go:
 ```bash
 ./scripts/demo.sh
 ```
+
+### Screenshots
+
+| Catalog (a category) | Product detail, localized to Japanese |
+|---|---|
+| ![Catalog category page](docs/images/03-category-fish.png) | ![Product page in Japanese](docs/images/05-product-ja.png) |
+
+The legacy per-locale catalog (`en_US` / `ja_JP` / `zh_CN`) is preserved faithfully — names,
+descriptions, **and** prices resolve per locale (note `¥`-scale prices `1951` / `1114` in the
+Japanese view). More under [`docs/images/`](docs/images).
 
 ---
 
