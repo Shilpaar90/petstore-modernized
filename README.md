@@ -121,8 +121,8 @@ mvn test
 | 0     | Foundation, discovery, scaffolding      | ✅ done |
 | 1     | Domain model & data layer               | ✅ done |
 | 2     | Catalog slice (read-only)               | ✅ done |
-| 3     | Identity & shopping cart                | 🟡 in progress |
-| 4     | Checkout & orders                       | ⬜ planned |
+| 3     | Identity & shopping cart                | ✅ done |
+| 4     | Checkout & orders                       | 🟡 in progress |
 | 5     | MongoDB stretch goal                    | ⬜ planned |
 | 6     | Hardening, publish, demo                | ⬜ planned |
 

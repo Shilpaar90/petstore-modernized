@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Cart — Pet Store')}">
+    <title>Cart — Pet Store</title>
+</head>
+<body>
+<header th:replace="~{fragments/layout :: topbar(${currentPath})}"></header>
+<nav class="crumbs"><a th:href="@{/}" href="/">Home</a> / Cart</nav>
+
+<h1>Your cart</h1>
+
+<p th:if="${cart.isEmpty()}" class="muted">
+    Your cart is empty. <a th:href="@{/categories}" href="/categories">Browse the catalog →</a>
+</p>
+
+<table th:unless="${cart.isEmpty()}">
+    <thead>
+    <tr><th>Item</th><th>Price</th><th>Qty</th><th>Line total</th><th></th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="line : ${cart.lines()}">
+        <td><a th:href="@{/items/{id}(id=${line.itemId})}" th:text="${line.description}" href="#">Large Angelfish</a></td>
+        <td class="price" th:text="${line.unitPrice}">16.50</td>
+        <td>
+            <form th:action="@{/cart/update}" method="post" class="inline">
+                <input type="hidden" name="itemId" th:value="${line.itemId}"/>
+                <input type="number" name="quantity" th:value="${line.quantity}" min="0" style="width: 4rem"/>
+                <button class="link" type="submit">Update</button>
+            </form>
+        </td>
+        <td class="price" th:text="${line.lineTotal}">33.00</td>
+        <td>
+            <form th:action="@{/cart/remove}" method="post" class="inline">
+                <input type="hidden" name="itemId" th:value="${line.itemId}"/>
+                <button class="link" type="submit">Remove</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr>
+        <th>Total</th><td></td>
+        <td th:text="${cart.unitCount()} + ' item(s)'">2 item(s)</td>
+        <td class="price" th:text="${cart.total()}">33.00</td>
+        <td></td>
+    </tr>
+    </tfoot>
+</table>
+</body>
+</html>

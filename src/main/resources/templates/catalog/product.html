@@ -4,7 +4,7 @@
     <title>Product — Pet Store</title>
 </head>
 <body>
-<div th:replace="~{fragments/layout :: langbar}"></div>
+<header th:replace="~{fragments/layout :: topbar(${currentPath})}"></header>
 <nav class="crumbs">
     <a th:href="@{/}" href="/">Home</a> /
     <a th:href="@{/categories}" href="/categories">Catalog</a> /
@@ -17,7 +17,7 @@
 
 <table>
     <thead>
-    <tr><th>Item</th><th>Description</th><th>Attributes</th><th>Price</th></tr>
+    <tr><th>Item</th><th>Description</th><th>Attributes</th><th>Price</th><th></th></tr>
     </thead>
     <tbody>
     <tr th:each="i : ${items}">
@@ -25,6 +25,12 @@
         <td th:text="${i.description}">Large Angelfish</td>
         <td class="attrs" th:text="${#strings.listJoin(i.attributes, ', ')}">Large, Cuddly</td>
         <td class="price" th:text="${i.listPrice}">16.50</td>
+        <td>
+            <form th:action="@{/cart/add}" method="post" class="inline">
+                <input type="hidden" name="itemId" th:value="${i.id}"/>
+                <button class="link" type="submit">Add to cart</button>
+            </form>
+        </td>
     </tr>
     </tbody>
 </table>

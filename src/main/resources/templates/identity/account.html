@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Account — Pet Store')}">
+    <title>Account — Pet Store</title>
+</head>
+<body>
+<header th:replace="~{fragments/layout :: topbar(${currentPath})}"></header>
+
+<h1>Your account</h1>
+<p>Signed in as <strong sec:authentication="name">user</strong>.</p>
+<p class="muted">
+    This page is protected — Spring Security redirects unauthenticated visitors to the login
+    page. Account profile and order history arrive in later phases.
+</p>
+
+<form th:action="@{/logout}" method="post">
+    <button class="primary" type="submit">Log out</button>
+</form>
+</body>
+</html>

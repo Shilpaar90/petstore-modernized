@@ -6,9 +6,11 @@ import com.example.petstore.catalog.application.port.in.CatalogQuery;
 import com.example.petstore.catalog.domain.Category;
 import com.example.petstore.catalog.domain.Item;
 import com.example.petstore.catalog.domain.Product;
+import com.example.petstore.identity.config.SecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -31,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * that a missing id becomes HTTP 404. The use case is mocked, so this exercises only the adapter.
  */
 @WebMvcTest(CatalogViewController.class)
+@Import(SecurityConfig.class)
 class CatalogViewControllerTest {
 
     @Autowired
