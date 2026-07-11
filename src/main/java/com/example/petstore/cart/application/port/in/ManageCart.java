@@ -21,6 +21,9 @@ public interface ManageCart {
 
     void remove(String itemId);
 
+    /** Empties the cart (e.g. after a successful checkout). */
+    void clear();
+
     /** The current cart, priced and localized for display. */
     CartView view(Locale locale);
 }

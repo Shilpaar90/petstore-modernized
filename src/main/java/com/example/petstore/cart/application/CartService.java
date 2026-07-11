@@ -49,6 +49,11 @@ public class CartService implements ManageCart {
     }
 
     @Override
+    public void clear() {
+        cart.clear();
+    }
+
+    @Override
     public CartView view(Locale locale) {
         List<CartLine> lines = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;

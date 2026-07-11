@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Order confirmed — Pet Store')}">
+    <title>Order confirmed — Pet Store</title>
+</head>
+<body>
+<header th:replace="~{fragments/layout :: topbar(${currentPath})}"></header>
+<nav class="crumbs">
+    <a th:href="@{/}" href="/">Home</a> /
+    <a th:href="@{/orders}" href="/orders">Orders</a> /
+    Confirmation
+</nav>
+
+<h1>✅ Thank you — your order is placed</h1>
+<p>
+    Order <strong th:text="${order.orderId}">abc-123</strong> ·
+    status <span th:text="${order.status}">SUBMITTED</span> ·
+    placed <span th:text="${order.placedAt}">2026-01-01T00:00:00Z</span>
+</p>
+<p class="muted">Your order has been handed off for processing.</p>
+
+<h2>Items</h2>
+<table>
+    <thead>
+    <tr><th>Item</th><th>Price</th><th>Qty</th><th>Line total</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="line : ${order.lines}">
+        <td th:text="${line.description}">Large Angelfish</td>
+        <td class="price" th:text="${line.unitPrice}">16.50</td>
+        <td th:text="${line.quantity}">2</td>
+        <td class="price" th:text="${line.lineTotal}">33.00</td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr><th>Total</th><td></td><td></td><td class="price" th:text="${order.total}">33.00</td></tr>
+    </tfoot>
+</table>
+
+<h2>Shipping to</h2>
+<p>
+    <span th:text="${order.shipping.name}">Alice</span><br/>
+    <span th:text="${order.shipping.addressLine}">1 Main St</span><br/>
+    <span th:text="${order.shipping.city}">Springfield</span><br/>
+    <span th:text="${order.shipping.email}">alice@example.com</span>
+</p>
+</body>
+</html>

@@ -46,5 +46,9 @@
     </tr>
     </tfoot>
 </table>
+
+<p th:unless="${cart.isEmpty()}">
+    <a class="primary" style="display:inline-block; text-decoration:none" th:href="@{/checkout}" href="/checkout">Proceed to checkout →</a>
+</p>
 </body>
 </html>

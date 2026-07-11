@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Your orders — Pet Store')}">
+    <title>Your orders — Pet Store</title>
+</head>
+<body>
+<header th:replace="~{fragments/layout :: topbar(${currentPath})}"></header>
+<nav class="crumbs"><a th:href="@{/}" href="/">Home</a> / Orders</nav>
+
+<h1>Your orders</h1>
+
+<p th:if="${orders.isEmpty()}" class="muted">
+    You have no orders yet. <a th:href="@{/categories}" href="/categories">Browse the catalog →</a>
+</p>
+
+<table th:unless="${orders.isEmpty()}">
+    <thead>
+    <tr><th>Order</th><th>Placed</th><th>Status</th><th>Total</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="o : ${orders}">
+        <td><a th:href="@{/orders/{id}(id=${o.orderId})}" th:text="${o.orderId}" href="#">abc-123</a></td>
+        <td th:text="${o.placedAt}">2026-01-01T00:00:00Z</td>
+        <td th:text="${o.status}">SUBMITTED</td>
+        <td class="price" th:text="${o.total}">33.00</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

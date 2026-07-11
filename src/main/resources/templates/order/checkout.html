@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Checkout — Pet Store')}">
+    <title>Checkout — Pet Store</title>
+</head>
+<body>
+<header th:replace="~{fragments/layout :: topbar(${currentPath})}"></header>
+<nav class="crumbs">
+    <a th:href="@{/}" href="/">Home</a> /
+    <a th:href="@{/cart}" href="/cart">Cart</a> /
+    Checkout
+</nav>
+
+<h1>Checkout</h1>
+
+<h2>Order summary</h2>
+<table>
+    <thead>
+    <tr><th>Item</th><th>Price</th><th>Qty</th><th>Line total</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="line : ${cart.lines()}">
+        <td th:text="${line.description}">Large Angelfish</td>
+        <td class="price" th:text="${line.unitPrice}">16.50</td>
+        <td th:text="${line.quantity}">2</td>
+        <td class="price" th:text="${line.lineTotal}">33.00</td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr><th>Total</th><td></td><td th:text="${cart.unitCount()}">2</td><td class="price" th:text="${cart.total()}">33.00</td></tr>
+    </tfoot>
+</table>
+
+<h2>Shipping details</h2>
+<form class="card" th:action="@{/checkout}" th:object="${form}" method="post">
+    <label for="name">Name</label>
+    <input type="text" id="name" th:field="*{name}"/>
+    <span class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">name error</span>
+
+    <label for="addressLine">Address</label>
+    <input type="text" id="addressLine" th:field="*{addressLine}"/>
+    <span class="error" th:if="${#fields.hasErrors('addressLine')}" th:errors="*{addressLine}">address error</span>
+
+    <label for="city">City</label>
+    <input type="text" id="city" th:field="*{city}"/>
+    <span class="error" th:if="${#fields.hasErrors('city')}" th:errors="*{city}">city error</span>
+
+    <label for="email">Email</label>
+    <input type="text" id="email" th:field="*{email}"/>
+    <span class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">email error</span>
+
+    <button class="primary" type="submit">Place order</button>
+</form>
+</body>
+</html>
