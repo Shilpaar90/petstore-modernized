@@ -12,3 +12,4 @@ supersedes the old one.
 | [0004](0004-relational-first-then-mongodb.md) | Relational-first, then MongoDB behind the same ports | Accepted |
 | [0005](0005-replace-waf-and-ejb-with-spring-mvc-and-security.md) | Replace WAF + EJB with Spring MVC + Spring Security | Accepted |
 | [0006](0006-order-submission-port-replaces-jms-opc.md) | Order submission port replaces JMS→OPC hand-off | Accepted |
+| [0007](0007-package-as-executable-jar-and-docker-compose.md) | Package as an executable jar with an optional Docker Compose stack | Accepted |

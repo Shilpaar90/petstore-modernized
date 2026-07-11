@@ -30,3 +30,17 @@ jobs:
           name: surefire-reports
           path: '**/target/surefire-reports/*.xml'
           if-no-files-found: ignore
+
+  image:
+    name: Build container image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Validates the multi-stage Dockerfile builds end-to-end (no push).
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: petstore-modernized:ci

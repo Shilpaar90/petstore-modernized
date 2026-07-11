@@ -1,0 +1,22 @@
+# `postgres` profile: the prod-like relational run (ADR-0004/0007). Same JPA adapters as the
+# default profile — only the datasource changes from embedded H2 to PostgreSQL. Flyway applies the
+# identical V1..V4 migrations. Connection details come from the environment (see docker-compose).
+#
+#   SPRING_PROFILES_ACTIVE=postgres \
+#   SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/petstore \
+#   mvn spring-boot:run
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/petstore}
+    username: ${SPRING_DATASOURCE_USERNAME:petstore}
+    password: ${SPRING_DATASOURCE_PASSWORD:petstore}
+
+  jpa:
+    properties:
+      # Postgres-friendly: let Hibernate use the standard dialect defaults; schema is Flyway's.
+      hibernate.jdbc.time_zone: UTC
+
+  # No H2 console in a prod-like run.
+  h2:
+    console:
+      enabled: false

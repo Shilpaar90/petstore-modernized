@@ -91,8 +91,30 @@ Tests use **embedded MongoDB** (flapdoodle), so `mvn test` needs no external bro
 the JPA adapters, and `MongoAppFlowIntegrationTest` runs the whole storefront (register → login →
 browse → checkout) on MongoDB.
 
-> The prod-like Docker Compose stack (Postgres + MongoDB) lands in Phase 6; this section is kept
-> current as each phase ships.
+### Prod-like run with Docker Compose
+
+The same container image runs against either datastore — the hexagonal payoff made tangible. Pick
+a Compose profile:
+
+```bash
+docker compose --profile relational up --build   # app + PostgreSQL (default JPA adapters)
+docker compose --profile document   up --build   # app + MongoDB   (mongo-profile adapters)
+```
+
+Then open <http://localhost:8080/>. Tear down with `docker compose down -v`.
+
+The app is a single executable jar (`java -jar target/*.jar`) or the provided multi-stage
+`Dockerfile` (non-root, Actuator health-checked). Connection details are environment-driven
+(`SPRING_DATASOURCE_URL`, `MONGODB_URI`); see [ADR-0007](docs/adr/0007-package-as-executable-jar-and-docker-compose.md).
+
+### Demo script
+
+With the app running (any datastore), drive the whole storefront — browse + i18n, register, log
+in, add to cart, checkout through the OPC seam — in one go:
+
+```bash
+./scripts/demo.sh
+```
 
 ---
 
@@ -106,8 +128,12 @@ src/main/java/com/example/petstore
 │   ├── application/                #   use-case services + ports (interfaces)
 │   └── adapter/{in/web,out/persistence}
 ├── cart/            identity/      order/      # further bounded contexts (Phases 3–4)
+│                                   #   each: adapter/out/persistence/{jpa,mongo} behind one port
 └── support/                        # cross-cutting: config, web, i18n
 ```
+
+Each bounded context's outbound persistence has **two** adapters — `jpa` (default profile) and
+`mongo` (`mongo` profile) — implementing the same port, selected by Spring profile (Phase 5).
 
 The layout is **ports-and-adapters (hexagonal)**: the domain and use cases depend on *ports*
 (interfaces); persistence and web live in *adapters*. This is what lets the same domain run
@@ -141,7 +167,7 @@ mvn test
 | 3     | Identity & shopping cart                | ✅ done |
 | 4     | Checkout & orders                       | ✅ done |
 | 5     | MongoDB stretch goal                    | ✅ done |
-| 6     | Hardening, publish, demo                | 🟡 in progress |
+| 6     | Hardening, publish, demo                | ✅ done |
 
 ---
 

@@ -1,0 +1,70 @@
+# Prod-like stack for the modernized Pet Store (ADR-0007). The same app image runs against either
+# datastore — proof of the hexagonal seams (ADR-0003/0004). Pick a Compose profile:
+#
+#   docker compose --profile relational up --build     # app on PostgreSQL (default JPA adapters)
+#   docker compose --profile document   up --build     # app on MongoDB   (mongo profile adapters)
+#
+# Then open http://localhost:8080/ . Stop with Ctrl-C; `docker compose down -v` to remove volumes.
+
+services:
+  postgres:
+    image: postgres:16
+    profiles: ["relational"]
+    environment:
+      POSTGRES_DB: petstore
+      POSTGRES_USER: petstore
+      POSTGRES_PASSWORD: petstore
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U petstore -d petstore"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  mongo:
+    image: mongo:7
+    profiles: ["document"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Relational run: app + PostgreSQL.
+  app:
+    build: .
+    profiles: ["relational"]
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/petstore
+      SPRING_DATASOURCE_USERNAME: petstore
+      SPRING_DATASOURCE_PASSWORD: petstore
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Document run: app + MongoDB.
+  app-mongo:
+    build: .
+    profiles: ["document"]
+    environment:
+      SPRING_PROFILES_ACTIVE: mongo
+      MONGODB_URI: mongodb://mongo:27017/petstore
+    ports:
+      - "8080:8080"
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
+  mongo-data:

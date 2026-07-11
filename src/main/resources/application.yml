@@ -43,15 +43,20 @@ spring:
 
 server:
   port: 8080
+  # Finish in-flight requests before exiting (clean container stop / rolling deploys).
+  shutdown: graceful
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,metrics
   endpoint:
     health:
       show-details: when-authorized
+      # Liveness/readiness groups for container orchestration.
+      probes:
+        enabled: true
 
 logging:
   level:
