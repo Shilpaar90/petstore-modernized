@@ -45,6 +45,12 @@
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <!-- Flyway 10+ splits DB support into modules; Postgres needs its own (H2 is bundled) -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 
         <!-- Persistence: MongoDB document adapter (Phase 5 stretch), activated by the `mongo` profile -->
         <dependency>
