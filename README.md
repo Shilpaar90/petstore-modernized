@@ -1,7 +1,7 @@
 # Pet Store — Modernized (J2EE 1.3 → Spring Boot / Java 21)
 
 A modernization of the classic **Java Pet Store 1.3.1** J2EE Blueprints storefront onto a
-current, self-contained runtime: **Spring Boot 3.5 on Java 21**, with a **relational-first**
+current, self-contained runtime: **Spring Boot 4.1 on Java 21**, with a **relational-first**
 persistence layer and a **MongoDB** adapter behind the same domain ports (the stretch goal).
 
 > Scope: the **consumer storefront** (`petstore.ear`) only — catalog browsing, shopping cart,

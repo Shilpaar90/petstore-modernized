@@ -1,6 +1,6 @@
 # Target Architecture
 
-The modernized storefront: a single Spring Boot 3.5 process on Java 21, structured as
+The modernized storefront: a single Spring Boot 4.1 process on Java 21, structured as
 ports-and-adapters with swappable persistence.
 
 ## 1. Runtime topology

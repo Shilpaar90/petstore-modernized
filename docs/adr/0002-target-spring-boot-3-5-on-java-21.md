@@ -1,7 +1,9 @@
 # ADR-0002: Target Spring Boot 3.5 on Java 21 (defer 4.x)
 
 ## Status
-Accepted
+Superseded by [ADR-0008](0008-upgrade-to-spring-boot-4.md) — the 4.x fast-follow was performed
+once behavioral parity was established, exactly as this ADR anticipated. The 3.5 milestone is
+preserved at the `spring-boot-3.5` git tag.
 
 ## Context
 The brief asks for "the latest stable version of Spring Boot ... based on Java 21." At the time

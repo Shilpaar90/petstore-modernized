@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.16</version>
+        <version>4.1.0</version>
         <relativePath/>
     </parent>
 
@@ -20,7 +20,21 @@
     <properties>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <testcontainers.version>2.0.5</testcontainers.version>
     </properties>
+
+    <!-- Spring Boot 4's BOM no longer manages Testcontainers versions, so import its BOM. -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <!-- Persistence: relational (JPA) — the faithful migration target (ADR-0004) -->
@@ -28,16 +42,21 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-        <!-- Schema as versioned code, derived from the legacy PopulateSQL.xml DDL -->
+        <!-- Schema as versioned code (Boot 4 moved Flyway auto-config into its own starter module). -->
         <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
         </dependency>
         <!-- Dev/test datastore: embedded, zero external dependency -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <!-- Dev H2 web console (Boot 4 extracted it into its own module; used by PathRequest.toH2Console) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-h2console</artifactId>
         </dependency>
         <!-- Prod-like relational datastore -->
         <dependency>
@@ -95,6 +114,18 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Boot 4 split the test slices into per-technology modules: @WebMvcTest/@AutoConfigureMockMvc
+             (webmvc-test) and @DataJpaTest/@AutoConfigureTestDatabase (data-jpa-test -> jdbc-test). -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
@@ -103,8 +134,8 @@
         <!-- Embedded MongoDB for dev/test — the `mongo` profile needs no external broker in tests -->
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
-            <artifactId>de.flapdoodle.embed.mongo.spring3x</artifactId>
-            <version>4.20.0</version>
+            <artifactId>de.flapdoodle.embed.mongo.spring4x</artifactId>
+            <version>4.33.0</version>
             <scope>test</scope>
         </dependency>
         <!-- Testcontainers: verify the relational migration on REAL PostgreSQL (CI; skipped w/o Docker) -->
@@ -115,12 +146,12 @@
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>postgresql</artifactId>
+            <artifactId>testcontainers-postgresql</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
