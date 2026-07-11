@@ -67,15 +67,32 @@ Then open:
 
 | Profile        | Datastore                     | Intended use                    |
 |----------------|-------------------------------|---------------------------------|
-| `jpa` (default)| H2 in-memory (dev) / Postgres | Faithful relational migration   |
-| `mongo`        | MongoDB (embedded / Atlas)    | Stretch goal — document model   |
+| default        | H2 in-memory (dev) / Postgres | Faithful relational migration   |
+| `mongo`        | MongoDB (real; embedded in tests) | Stretch goal — document model |
+
+The default profile runs the JPA adapters (Flyway-managed schema + seed). The `mongo` profile
+swaps **only the outbound persistence adapters** — the domain, use cases, web layer, and security
+are untouched — proving the ports-and-adapters seams (ADR-0003/0004):
 
 ```bash
-mvn spring-boot:run -Dspring-boot.run.profiles=mongo
+mvn spring-boot:run -Dspring-boot.run.profiles=mongo   # needs a MongoDB (see Docker Compose, Phase 6)
 ```
 
-> Profiles and the prod-like Docker Compose stack are introduced in later phases; this section
-> is kept current as each lands.
+The Mongo catalog is seeded from `db/mongo/catalog-seed.json`, generated from the **same** legacy
+XML as the relational seed by one tool with two emitters:
+
+```bash
+python3 tools/seed-import/extract_catalog_seed.py --format sql   > src/main/resources/db/migration/V2__catalog_seed.sql
+python3 tools/seed-import/extract_catalog_seed.py --format mongo > src/main/resources/db/mongo/catalog-seed.json
+```
+
+Tests use **embedded MongoDB** (flapdoodle), so `mvn test` needs no external broker. The
+`MongoPortParityTest` asserts the Mongo adapters reproduce the legacy catalog facts identically to
+the JPA adapters, and `MongoAppFlowIntegrationTest` runs the whole storefront (register → login →
+browse → checkout) on MongoDB.
+
+> The prod-like Docker Compose stack (Postgres + MongoDB) lands in Phase 6; this section is kept
+> current as each phase ships.
 
 ---
 
@@ -123,8 +140,8 @@ mvn test
 | 2     | Catalog slice (read-only)               | ✅ done |
 | 3     | Identity & shopping cart                | ✅ done |
 | 4     | Checkout & orders                       | ✅ done |
-| 5     | MongoDB stretch goal                    | 🟡 in progress |
-| 6     | Hardening, publish, demo                | ⬜ planned |
+| 5     | MongoDB stretch goal                    | ✅ done |
+| 6     | Hardening, publish, demo                | 🟡 in progress |
 
 ---
 

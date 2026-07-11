@@ -4,6 +4,7 @@ import com.example.petstore.order.application.port.out.OrderRepository;
 import com.example.petstore.order.domain.Order;
 import com.example.petstore.order.domain.OrderLine;
 import com.example.petstore.order.domain.ShippingDetails;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Optional;
  * domain {@link Order} aggregate and the {@code orders}/{@code order_lines} entities.
  */
 @Repository
+@Profile("!mongo")
 public class OrderRepositoryJpaAdapter implements OrderRepository {
 
     private final OrderJpaRepository orders;

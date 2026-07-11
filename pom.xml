@@ -46,6 +46,12 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Persistence: MongoDB document adapter (Phase 5 stretch), activated by the `mongo` profile -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+
         <!-- Web + server-side views -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -86,6 +92,13 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Embedded MongoDB for dev/test — the `mongo` profile needs no external broker in tests -->
+        <dependency>
+            <groupId>de.flapdoodle.embed</groupId>
+            <artifactId>de.flapdoodle.embed.mongo.spring3x</artifactId>
+            <version>4.20.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

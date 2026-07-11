@@ -2,6 +2,19 @@ spring:
   application:
     name: Pet Store (Modernized)
 
+  # Default profile is the relational (JPA) target. MongoDB is on the classpath for the `mongo`
+  # profile (Phase 5) — keep its auto-config off here so the default run is pure JPA and its
+  # health/connection machinery never activates. The `mongo` profile re-enables it and instead
+  # excludes the JPA stack (see application-mongo.yml).
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration
+      # Test-only class (flapdoodle); absent at runtime so this entry is ignored there, but it
+      # keeps embedded Mongo from starting in the default-profile (JPA) tests.
+      - de.flapdoodle.embed.mongo.spring.autoconfigure.EmbeddedMongoAutoConfiguration
+
   # Relational (JPA) is the default/faithful migration target (ADR-0004).
   # Dev/demo uses embedded H2 — zero external dependency (see README).
   datasource:

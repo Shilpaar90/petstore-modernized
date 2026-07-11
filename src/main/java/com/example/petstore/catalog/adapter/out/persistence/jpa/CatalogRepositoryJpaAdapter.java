@@ -10,6 +10,7 @@ import com.example.petstore.catalog.application.port.CatalogRepository;
 import com.example.petstore.catalog.domain.Category;
 import com.example.petstore.catalog.domain.Item;
 import com.example.petstore.catalog.domain.Product;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ import java.util.Optional;
  * used during mapping resolve within an open session.
  */
 @Repository
+@Profile("!mongo")
 @Transactional(readOnly = true)
 public class CatalogRepositoryJpaAdapter implements CatalogRepository {
 

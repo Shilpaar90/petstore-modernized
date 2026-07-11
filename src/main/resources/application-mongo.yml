@@ -1,0 +1,32 @@
+# `mongo` profile (Phase 5 stretch): run the whole storefront on MongoDB behind the same ports.
+#
+# Re-platforming is a bounded, edge-only change: the domain, use cases, and web layer are
+# untouched; only the outbound persistence adapters differ (ADR-0003/0004). This profile swaps the
+# JPA stack out and MongoDB in.
+#
+#   mvn spring-boot:run -Dspring-boot.run.profiles=mongo      # needs a MongoDB (see README / Phase 6 compose)
+#
+# Tests use embedded MongoDB, so CI needs no external broker.
+spring:
+  # Turn OFF the relational stack for this profile (mirror image of the default profile's excludes).
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
+
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/petstore}
+      auto-index-creation: true
+
+# Embedded MongoDB version used by tests (flapdoodle). Harmless at runtime — flapdoodle is a
+# test-scoped dependency, so this property is only ever read in tests; production connects to the
+# real MongoDB at spring.data.mongodb.uri above.
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: "7.0.14"
