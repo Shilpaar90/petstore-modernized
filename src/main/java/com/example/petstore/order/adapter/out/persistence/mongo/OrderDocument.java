@@ -2,6 +2,7 @@ package com.example.petstore.order.adapter.out.persistence.mongo;
 
 import com.example.petstore.order.domain.OrderStatus;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
@@ -92,6 +93,7 @@ public class OrderDocument {
 
     @Id
     private String orderId;
+    @Indexed
     private String username;
     private BigDecimal total;
     private OrderStatus status;

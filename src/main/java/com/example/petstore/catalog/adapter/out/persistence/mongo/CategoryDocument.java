@@ -3,47 +3,40 @@ package com.example.petstore.catalog.adapter.out.persistence.mongo;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Map;
+
 /**
- * MongoDB projection of a localized category — one document per (catid, locale). Unlike the
- * relational split of {@code category} + {@code category_details}, the document model folds the
- * locale detail into a single collection (see the denormalized seed).
+ * MongoDB document for a catalog category — one document per {@code catid}, the entity's real
+ * natural key. Locale-varying fields ({@code name}, {@code descn}) live in the {@code i18n} map;
+ * {@code image} is locale-invariant in the legacy data and stays top-level (see ADR-0009, which
+ * replaced the earlier one-document-per-{@code (catid, locale)} partitioning).
  */
 @Document(collection = "catalog_categories")
 public class CategoryDocument {
 
     @Id
-    private String id; // "{catid}|{locale}"
     private String catid;
-    private String locale;
-    private String name;
     private String image;
-    private String descn;
+    private Map<String, LocalizedText> i18n;
 
     protected CategoryDocument() {
     }
 
-    public CategoryDocument(String catid, String locale, String name, String image, String descn) {
-        this.id = catid + "|" + locale;
+    public CategoryDocument(String catid, String image, Map<String, LocalizedText> i18n) {
         this.catid = catid;
-        this.locale = locale;
-        this.name = name;
         this.image = image;
-        this.descn = descn;
+        this.i18n = i18n;
     }
 
     public String getCatid() {
         return catid;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public String getImage() {
         return image;
     }
 
-    public String getDescn() {
-        return descn;
+    public Map<String, LocalizedText> getI18n() {
+        return i18n == null ? Map.of() : i18n;
     }
 }

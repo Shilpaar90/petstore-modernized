@@ -13,15 +13,17 @@ import org.springframework.stereotype.Component;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Seeds the MongoDB catalog on {@code mongo}-profile startup from
  * {@code db/mongo/catalog-seed.json} — the document counterpart of the relational Flyway V2 seed,
  * generated from the SAME legacy XML by {@code tools/seed-import/extract_catalog_seed.py}
- * ({@code --format mongo}). Idempotent: only seeds when the catalog is empty, so repeated boots
- * (and test contexts) don't duplicate. This is the document-store arm of the data-migration story
- * in ADR-0006 / the target architecture.
+ * ({@code --format mongo}). The JSON is already shaped like the target documents (one entry per
+ * product with embedded items and a keyed {@code i18n} map, see ADR-0009), so seeding is a direct
+ * read, not a grouping/aggregation step. Idempotent: only seeds when the catalog is empty.
  */
 @Component
 @Profile("mongo")
@@ -32,16 +34,13 @@ public class CatalogMongoSeeder implements ApplicationRunner {
 
     private final CategoryDocumentRepository categories;
     private final ProductDocumentRepository products;
-    private final ItemDocumentRepository items;
     private final ObjectMapper objectMapper;
 
     public CatalogMongoSeeder(CategoryDocumentRepository categories,
                               ProductDocumentRepository products,
-                              ItemDocumentRepository items,
                               ObjectMapper objectMapper) {
         this.categories = categories;
         this.products = products;
-        this.items = items;
         this.objectMapper = objectMapper;
     }
 
@@ -59,28 +58,46 @@ public class CatalogMongoSeeder implements ApplicationRunner {
 
         List<CategoryDocument> cats = new ArrayList<>();
         for (JsonNode c : root.path("categories")) {
-            cats.add(new CategoryDocument(c.path("catid").asText(), c.path("locale").asText(),
-                    text(c, "name"), text(c, "image"), text(c, "descn")));
+            cats.add(new CategoryDocument(c.path("catid").asText(), text(c, "image"), textI18n(c.path("i18n"))));
         }
+
         List<ProductDocument> prods = new ArrayList<>();
+        int itemCount = 0;
         for (JsonNode p : root.path("products")) {
+            List<ProductDocument.ItemEntry> items = new ArrayList<>();
+            for (JsonNode i : p.path("items")) {
+                items.add(new ProductDocument.ItemEntry(i.path("itemid").asText(), text(i, "image"), itemI18n(i.path("i18n"))));
+                itemCount++;
+            }
             prods.add(new ProductDocument(p.path("productid").asText(), p.path("catid").asText(),
-                    p.path("locale").asText(), text(p, "name"), text(p, "image"), text(p, "descn")));
-        }
-        List<ItemDocument> its = new ArrayList<>();
-        for (JsonNode i : root.path("items")) {
-            List<String> attrs = new ArrayList<>();
-            i.path("attributes").forEach(a -> attrs.add(a.asText()));
-            its.add(new ItemDocument(i.path("itemid").asText(), i.path("productid").asText(),
-                    i.path("locale").asText(), new BigDecimal(i.path("listprice").asText()),
-                    new BigDecimal(i.path("unitcost").asText()), text(i, "image"), text(i, "descn"), attrs));
+                    text(p, "image"), textI18n(p.path("i18n")), items));
         }
 
         categories.saveAll(cats);
         products.saveAll(prods);
-        items.saveAll(its);
-        log.info("Seeded Mongo catalog: {} categories, {} products, {} items",
-                cats.size(), prods.size(), its.size());
+        log.info("Seeded Mongo catalog: {} categories, {} products, {} items", cats.size(), prods.size(), itemCount);
+    }
+
+    private static Map<String, LocalizedText> textI18n(JsonNode i18nNode) {
+        Map<String, LocalizedText> map = new LinkedHashMap<>();
+        i18nNode.properties().forEach(e -> {
+            JsonNode v = e.getValue();
+            map.put(e.getKey(), new LocalizedText(text(v, "name"), text(v, "descn")));
+        });
+        return map;
+    }
+
+    private static Map<String, ProductDocument.ItemLocale> itemI18n(JsonNode i18nNode) {
+        Map<String, ProductDocument.ItemLocale> map = new LinkedHashMap<>();
+        i18nNode.properties().forEach(e -> {
+            JsonNode v = e.getValue();
+            List<String> attrs = new ArrayList<>();
+            v.path("attributes").forEach(a -> attrs.add(a.asText()));
+            map.put(e.getKey(), new ProductDocument.ItemLocale(
+                    new BigDecimal(v.path("listprice").asText()), new BigDecimal(v.path("unitcost").asText()),
+                    text(v, "descn"), attrs));
+        });
+        return map;
     }
 
     /** Null-safe text: JSON null -> Java null (preserves the relational NULLs, e.g. category descn). */

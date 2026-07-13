@@ -22,6 +22,10 @@ python3 tools/seed-import/extract_catalog_seed.py --format mongo \
   > src/main/resources/db/mongo/catalog-seed.json
 ```
 
+The `mongo` output is nested to match the target document shape (ADR-0009): one entry per
+category/product keyed by its real natural id, items embedded inside their owning product, and
+locale folded into a per-entity `i18n` map — not a flat row per `(id, locale)`.
+
 Each run prints row counts to stderr, e.g.:
 ```
 [sql] 5 categories, 15 category_details, 16 products, 48 product_details, 28 items, 83 item_details

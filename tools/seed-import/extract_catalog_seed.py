@@ -6,7 +6,9 @@ This is a one-way migration tool: it reads the original `Populate-UTF8.xml` (fro
 Store 1.3.1 distribution) and emits the catalog seed in either:
 
   * ``sql``   — idempotent-ordered INSERTs matching the V1 relational schema (Flyway V2), OR
-  * ``mongo`` — a denormalized JSON document seed for the MongoDB adapter (Phase 5).
+  * ``mongo`` — a nested JSON document seed matching the target Mongo document shape (ADR-0009):
+    one document per category/product, items embedded in their product, locale folded into an
+    ``i18n`` map instead of a document-per-locale partition.
 
 Keeping ONE generator with two emitters preserves a single source of truth: the relational and
 document seeds can never drift, because both are produced from the same legacy XML.
@@ -22,7 +24,10 @@ Mappings:
   * xml:lang "en-US" -> locale "en_US" (legacy stored underscore form; cf. Profile/PreferredLanguage)
   * <Attribute> elements -> attr1..attr5 (SQL) / an "attributes" array (Mongo)
   * Categories have Name+Image; Products/Items add Description; Items add ListPrice/UnitCost
-  * Mongo denormalizes catid onto product docs and productid onto item docs (no joins).
+  * Mongo: catid is denormalized onto product docs (still a reference, not embedded — see
+    ADR-0009); items are embedded arrays on their product, not a standalone collection.
+  * image is locale-invariant in the legacy data, so Mongo hoists it out of ``i18n`` to the
+    document/item's top level, keyed by the first detail row seen for that id.
 """
 from __future__ import annotations
 
@@ -150,13 +155,54 @@ def emit_sql(model: dict, src_name: str, out) -> None:
 
 
 def emit_mongo(model: dict, src_name: str, out) -> None:
-    """Denormalized, locale-row document seed: one doc per (id, locale)."""
-    doc = {
-        "_generatedFrom": src_name,
-        "categories": model["category_details"],
-        "products": model["product_details"],
-        "items": model["item_details"],
-    }
+    """Nested document seed matching the target Mongo shape (ADR-0009): one document per
+    category/product keyed by its real natural id, locale-varying fields folded into an ``i18n``
+    map, and items embedded inside their owning product — not a flat per-(id, locale) row list."""
+
+    def group_i18n(details: list[dict], key: str, locale_fields: dict) -> tuple[dict, dict]:
+        """Groups detail rows by their parent id into an i18n map, plus the (locale-invariant)
+        image keyed by the same id, taken from the first row seen for that id."""
+        i18n: dict = {}
+        image: dict = {}
+        for d in details:
+            i18n.setdefault(d[key], {})[d["locale"]] = {f: d[f] for f in locale_fields}
+            image.setdefault(d[key], d.get("image"))
+        return i18n, image
+
+    cat_i18n, cat_image = group_i18n(model["category_details"], "catid", {"name": None, "descn": None})
+    categories_out = [
+        {"catid": c["catid"], "image": cat_image.get(c["catid"]), "i18n": cat_i18n.get(c["catid"], {})}
+        for c in model["categories"]
+    ]
+
+    prod_i18n, prod_image = group_i18n(model["product_details"], "productid", {"name": None, "descn": None})
+
+    item_i18n: dict = {}
+    item_image: dict = {}
+    for d in model["item_details"]:
+        item_i18n.setdefault(d["itemid"], {})[d["locale"]] = {
+            "listprice": d["listprice"], "unitcost": d["unitcost"],
+            "descn": d["descn"], "attributes": list(d["attributes"]),
+        }
+        item_image.setdefault(d["itemid"], d.get("image"))
+
+    items_by_product: dict = {}
+    for it in model["items"]:
+        items_by_product.setdefault(it["productid"], []).append(it["itemid"])
+
+    products_out = []
+    for p in model["products"]:
+        pid = p["productid"]
+        items_out = [
+            {"itemid": iid, "image": item_image.get(iid), "i18n": item_i18n.get(iid, {})}
+            for iid in items_by_product.get(pid, [])
+        ]
+        products_out.append({
+            "productid": pid, "catid": p["catid"], "image": prod_image.get(pid),
+            "i18n": prod_i18n.get(pid, {}), "items": items_out,
+        })
+
+    doc = {"_generatedFrom": src_name, "categories": categories_out, "products": products_out}
     json.dump(doc, out, ensure_ascii=False, indent=2)
     out.write("\n")
 

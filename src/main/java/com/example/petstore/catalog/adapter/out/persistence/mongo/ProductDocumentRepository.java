@@ -7,7 +7,9 @@ import java.util.Optional;
 
 public interface ProductDocumentRepository extends MongoRepository<ProductDocument, String> {
 
-    List<ProductDocument> findByCatidAndLocaleOrderByProductidAsc(String catid, String locale);
+    List<ProductDocument> findByCatidOrderByProductidAsc(String catid);
 
-    Optional<ProductDocument> findByProductidAndLocale(String productid, String locale);
+    /** Finds the owning product for an item id — items are embedded, so this queries into the
+     *  {@code items.itemid} array field rather than a standalone item collection (ADR-0009). */
+    Optional<ProductDocument> findByItems_Itemid(String itemid);
 }
