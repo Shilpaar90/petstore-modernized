@@ -1,7 +1,7 @@
 # ADR-0004: Relational-first, then MongoDB behind the same ports
 
 ## Status
-Accepted
+Accepted (document-model consequences amended by [ADR-0009](0009-mongo-catalog-schema-access-pattern-review.md))
 
 ## Context
 The legacy store is relational (Cloudscape/Derby; Oracle DDL also shipped). The stretch goal is
